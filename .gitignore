@@ -1,0 +1,11 @@
+# Generated from project.yml by XcodeGen — never commit a pbxproj you didn't hand-write.
+BluDelivery.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+build/
+TestResults.xcresult/
+test-report.md
+test-results.json
+.DS_Store
+__pycache__/

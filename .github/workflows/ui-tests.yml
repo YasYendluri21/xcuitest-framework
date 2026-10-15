@@ -1,0 +1,39 @@
+name: UI Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ui-tests:
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Two device classes rather than two shards: a layout bug on a smaller screen is a real
+        # failure mode for a UI suite, and sharding alone would never surface it.
+        device: ["iPhone 16 Pro", "iPhone SE (3rd generation)"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Run UI tests
+        run: python3 tools/runner.py --device "${{ matrix.device }}"
+
+      - name: Publish summary
+        if: always()
+        run: cat test-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload result bundle
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult-${{ matrix.device }}
+          path: TestResults.xcresult
